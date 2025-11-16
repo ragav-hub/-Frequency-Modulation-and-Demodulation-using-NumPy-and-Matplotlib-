@@ -34,6 +34,66 @@ __Algorithm:__
 
 __Programme:__
 
+```
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import hilbert
+
+# Parameters
+Fs = 5000  # Sampling frequency
+Fc = 200   # Carrier frequency
+f_mod = 20  # Modulating signal frequency
+Am = 1.5    # Amplitude of the modulating signal
+kf = 50     # Frequency deviation constant
+t = np.arange(0, 1, 1/Fs)  # Time vector
+
+# Modulating signal (message signal)
+modulating_signal = Am * np.cos(2 * np.pi * f_mod * t)
+
+# FM Modulation
+integral_of_message = np.cumsum(modulating_signal) / Fs
+carrier = np.cos(2 * np.pi * Fc * t + 2 * np.pi * kf * integral_of_message)
+
+# Plot modulating signal and modulated FM signal
+plt.figure(figsize=(10, 8))
+
+plt.subplot(3, 1, 1)
+plt.plot(t, modulating_signal)
+plt.title('Modulating Signal (Message)')
+plt.xlabel('Time (s)')
+plt.ylabel('Amplitude')
+
+plt.subplot(3, 1, 2)
+plt.plot(t, carrier)
+plt.title('FM Modulated Signal')
+plt.xlabel('Time (s)')
+plt.ylabel('Amplitude')
+
+# FM Demodulation using Hilbert Transform to extract the instantaneous frequency
+analytic_signal = hilbert(carrier)
+instantaneous_phase = np.unwrap(np.angle(analytic_signal))
+instantaneous_frequency = np.diff(instantaneous_phase) * Fs / (2 * np.pi)
+
+# Since diff reduces the array length by 1, we'll adjust the time array for plotting
+t_demod = t[1:]
+
+plt.subplot(3, 1, 3)
+plt.plot(t_demod, instantaneous_frequency - Fc)  # Subtract carrier frequency
+plt.title('Demodulated Signal (Recovered Message)')
+plt.xlabel('Time (s)')
+plt.ylabel('Frequency (Hz)')
+
+plt.tight_layout()
+plt.show()
+
+```
+
 __Output:__
 
+<img width="1237" height="995" alt="image" src="https://github.com/user-attachments/assets/cd9e1bc5-5ae8-4918-b173-6c31fb5b338a" />
+
+
 __Result:__
+
+Thus, The Frequency-Modulation-and-Demodulation-using-NumPy-and-Matplotlib is executed and output is verified successfully.
